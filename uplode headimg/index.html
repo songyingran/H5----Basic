@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>上传头像</title>
+		<link href="css/style.css" rel="stylesheet" />
+		<script type = "text/javascript" src="js/index.js"></script>
+	</head>
+	<body>
+		<p>上传头像</p>
+		<div id="contentner" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+	</body>
+	<script>
+		var contentner = document.getElementById("contentner");
+		contentner.ondragenter = function () {
+            this.innerHTML = '松开上传';
+         }
+         contentner.ondragover = function (e) {
+            var e = e || window.event;
+            e.preventDefault();
+         };
+         contentner.ondragleave = function (e) {
+             this.innerHTML = '请上传图片';
+         }
+		function allowDrop(ev) { 
+    		ev.preventDefault(); 
+		} 
+		
+		function drop(ev){
+			var ev = ev || window.event;
+			ev.preventDefault(); 
+	    	var f0 = ev.dataTransfer.files;
+	    	var fr = new FileReader();
+	    	fr.readAsDataURL(f0[0]);
+	    	fr.onload = function(){
+	    		console.log("读取完毕");
+	    		var img = document.createElement('img');
+	    		img.src = this.result;
+	    		document.body.appendChild(img);
+	    		img.style.position = "relative";
+	    		img.style.top = "-300px";
+	    		img.style.width = "500px";
+	    		img.style.height = "300px";
+	    	}
+	    	/*ev.DataTransfer.setData("text",ev.target.id);
+    		var data=ev.dataTransfer.getData("text");
+    		ev.target.appendChild(document.getElementById(data));*/
+	    	
+		}
+		document.ondragover = function(e){e.preventDefault();};
+		document.ondrop = function(e){e.preventDefault();};
+	</script>
+</html>
+
+
