@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>canvas绘制钟表</title>
+	<style type="text/css">
+		#canvas1{
+		margin: 0 auto;
+		display: block;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas1" width="600" height="600"></canvas>
+</body>
+
+<script type="text/javascript">
+	
+	var canvas = document.getElementById("canvas1");
+	var context = canvas.getContext("2d");
+	var r = canvas.width/2.5;
+	//通过平移旋转改变画笔的原始坐标位置
+	var yuanShiWidth = canvas.width * 0.5;//X轴
+	var yuanShiHeight = canvas.height * 0.5;//Y轴
+	context.translate(yuanShiWidth,yuanShiHeight);
+	//通过平移旋转改变画笔的X轴和Y轴的方向
+	context.rotate(-Math.PI / 2);//逆时针旋转90度
+	//绘制表盘
+	function dralDial () {
+	//外层圆
+	context.beginPath();
+	context.arc(0,0,yuanShiWidth,0,Math.PI * 2,false);
+	context.fillStyle = "chartreuse";
+	context.fill();
+	//内层圆
+	context.beginPath();
+	context.arc(0,0,280,0,Math.PI * 2,false);
+	context.lineWidth = 10;
+	context.fillStyle = "ivory";
+	context.fill();
+	}
+	//绘制刻度 时刻 和 分刻
+	function drawScale () {
+		for (var i = 0; i < 60; i++) {
+			if (i % 5 == 0) {
+			//绘制时刻 整点
+			    var font;
+			    context.fillStyle = '#000';
+				context.beginPath();
+				context.moveTo(238,0);
+				context.lineTo(270,0);
+				context.strokeStyle = "red";
+				context.stroke();
+				
+			} else{
+			//绘制分刻 非整点
+				context.beginPath();
+				context.moveTo(245,0);
+				context.lineTo(270,0);
+				context.lineWidth = 5;
+				context.strokeStyle = "black";
+				context.stroke();
+			}
+			//旋转6度
+			context.rotate(Math.PI / 180 * 6);
+		}
+	}
+	
+	//每一度
+	var yiDu = Math.PI / 180;
+	//绘制时针 分针 秒针
+	function drawTime () {
+	//获取当前系统时间
+		var time = new Date();
+		var hour = time.getHours();
+		var minute = time.getMinutes();
+		var second = time.getSeconds();
+		//调用save函数，保存当前的绘制状态
+		context.save();
+		//需要旋转的角度(坐标轴)
+		context.rotate(yiDu * 30 * hour + yiDu * minute / 60 * 30);
+		//绘制时针
+		context.beginPath();
+		context.moveTo(-20,0);
+		context.lineTo(180,0);
+		context.lineWidth = 13;
+		context.strokeStyle = "darkmagenta"
+		context.stroke();
+		//调用restore函数 移除自上一次调用save方法以来所添加的任何效果，也就是撤销之前的变化
+		context.restore();
+		//绘制分针
+		context.save();
+		context.rotate(yiDu * 6 * minute + yiDu * second / 60 * 6);
+		context.beginPath();
+		context.moveTo(-30,0);
+		context.lineTo(210,0);
+		context.lineWidth = 10;
+		context.strokeStyle = "hotpink";
+		context.stroke();
+		context.restore();
+		//绘制秒针
+		context.save();
+		context.rotate(yiDu * 6 * second);context.beginPath();
+		context.moveTo(-40,0);
+		context.lineTo(235,0);
+		context.lineWidth = 8;
+		context.strokeStyle = "red";
+		context.stroke();
+		
+		context.beginPath();
+		context.arc(190,0,10,0,2*Math.PI,true);
+		context.fillStyle = "red";
+		context.closePath();
+		context.fill();
+		
+		context.beginPath();
+		context.arc(190,0,4,0,2*Math.PI,true);
+		context.fillStyle = "black";
+		context.closePath();
+		context.fill();
+		
+		
+		context.restore();
+		
+		//美观-绘制圆
+		context.beginPath();
+		context.arc(0,0,10,0,2*Math.PI,true);
+		context.fillStyle = "red";
+		context.closePath();
+		context.fill();
+		
+		context.beginPath();
+		context.arc(0,0,4,0,2*Math.PI,true);
+		context.fillStyle = "black";
+		context.closePath();
+		context.fill();
+	}
+	
+	/*function drawClockScale() {
+        var angle, font, fontX, fontY;
+        //context.rotate(90/180*Math.PI);
+        context.fillStyle = '#000';
+        // 绘制表盘文字
+        for(i = 0;i<12;i++){
+            angle = i *30;
+            // 转换为弧度制,Math.sin、Math.cos都接受弧度制单位
+            angle = angle*Math.PI/180;
+            font = (i +12> 12)?i+12-12 : i+12;
+            fontX = Math.round(Math.cos(angle)*(r-30));
+            fontY = Math.round(Math.sin(angle)*(r-30));
+            context.font = 'bold 30px 微软雅黑';
+            context.fillText(font+'',fontX,fontY);
+        }
+    }*/
+    /*var time = [3,4,5,6,7,8,9,10,11,12,1,2];
+    var angle;
+    function drawClockScale(){
+   		for(i = 0;i<12;i++){
+   			angle = i*30;
+   			angle = angle*Math.PI/180;
+   			font = time[i];
+   			fontX = Math.round(Math.cos(angle)*(r-30));
+            fontY = Math.round(Math.sin(angle)*(r-30));
+            context.font = 'bold 30px 微软雅黑';
+            context.fillText(font+'',fontX,fontY);
+   		}
+    }*/
+
+	//绘制钟表
+	function drawClock () {
+		dralDial();
+	    //drawClockScale();
+		drawScale();
+		drawTime();
+	
+		//刷新频率
+		window.requestAnimationFrame(drawClock);
+	}
+	drawClock();
+</script>
+</html>
+
